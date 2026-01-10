@@ -123,7 +123,7 @@ button {
   font-weight: bold;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin-top: 10px;
+  margin-top: auto;
 }
 
 button:hover {
@@ -162,6 +162,13 @@ button:hover {
   gap: 10px;
   margin-bottom: 20px;
   width: 100%;
+  align-items: center;
+}
+
+.search-filter-row label {
+  min-width: auto;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .search-input {
@@ -253,5 +260,15 @@ button:hover {
 }
 
 .view-more-link:hover {
-  color: #667eea;
+  color: #707070;
+}
+
+
+.footer {
+  text-align: left;
+  padding: 20px;
+  color: white;
+  font-size: 14px;
+  margin-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
