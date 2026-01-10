@@ -1,12 +1,176 @@
-import './App.css'
+import "./App.css";
+import { useState } from "react";
 
 function App() {
+  const [appointments, setAppointments] = useState([
+    { name: "Josh", doctor: "Dr. Lee", date: "2026-01-10", time: "02:00" } // constant example
+  ]);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    doctor: "",
+    date: "",
+    time: "",
+  });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterValue, setFilterValue] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setAppointments((prev) => [...prev, formData]);
+    console.log("Appointment booked:", formData);
+    setFormData({
+      name: "",
+      doctor: "",
+      date: "",
+      time: "",
+    });
+  };
 
   return (
-    <div class="book-appointmentBox">
-      <p>Hello world</p>
+    <div className="container">
+      <div className="book-appointmentBox">
+        <h2>Book Appointment</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <label htmlFor="name">Your Name:</label>
+            <input
+              id="name"
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="doctor">Doctor:</label>
+            <select
+              id="doctor"
+              name="doctor"
+              value={formData.doctor}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Doctor</option>
+              <option value="Dr. Smith">Dr. Smith</option>
+              <option value="Dr. Lee">Dr. Lee</option>
+            </select>
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="date">Date:</label>
+            <input
+              id="date"
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <label htmlFor="time">Time:</label>
+            <input
+              id="time"
+              type="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button type="submit">Book Appointment</button>
+        </form>
+      </div>
+
+      <div className="appointmentListBox">
+        <h2>Appointment List</h2>
+
+        <div className="search-filter-row">
+          <label htmlFor="search">Search:</label>
+          <input
+            id="search"
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <label htmlFor="filter">Filter:</label>
+          <select
+            id="filter"
+            value={filterValue}
+            onChange={(e) => setFilterValue(e.target.value)}
+            className="filter-dropdown"
+          >
+            <option value="">Filter</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+
+        <div className="appointment-header">
+          <div className="header-cell">Patient</div>
+          <div className="header-cell">Doctor</div>
+          <div className="header-cell">Date</div>
+          <div className="header-cell">Time</div>
+        </div>
+
+        <div className="appointment-list-canvas">
+          {appointments
+            .filter((appt) => {
+              const searchMatch =
+                appt.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                appt.doctor.toLowerCase().includes(searchTerm.toLowerCase());
+
+              if (!searchMatch) return false;
+
+              if (filterValue === "") return true;
+
+              const appointmentDate = new Date(appt.date);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              if (filterValue === "upcoming") {
+                return appointmentDate >= today;
+              } else if (filterValue === "past") {
+                return appointmentDate < today;
+              } else if (filterValue === "all") {
+                return true;
+              }
+
+              return true;
+            })
+            .map((appt, index) => (
+              <div key={index} className="appointment-row">
+                <div>{appt.name}</div>
+                <div>{appt.doctor}</div>
+                <div>{appt.date}</div>
+                <div>{appt.time}</div>
+              </div>
+            ))}
+        </div>
+
+        <a href="#" className="view-more-link">
+          View More
+        </a>
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
