@@ -1,3 +1,5 @@
+import { db } from "./db.js";
+
 import express from "express";
 import cors from "cors";
 
@@ -6,8 +8,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get('/api/health', (req, res) => {
-    res.json({ status: "Backend is on" });
+app.get('/api/appointments', (req, res) => {
+    const sql = "SELECT * from appointments";
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json(err);
+        res.json(results);
+    });
+});
+
+app.post("/api/appointments", (req, res) => {
+    const { name, doctor, date, time } = req.body;
+
+    const sql = "INSERT INTO appointments (name, doctor, date, time) VALUES (?, ?, ?, ?)";
+    db.query(sql, [name, doctor, date, time], (err) =>{
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Appointment received."});
+    });
 });
 
 const PORT = 3001;
