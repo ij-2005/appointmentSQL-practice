@@ -10,15 +10,15 @@ function App() {
       const res = await fetch("http://localhost:3001/api/appointments");
       const data = await res.json();
       setAppointments(data);
-    } catch (err){
-        console.log("Error fetching appointments list. ", err);
+    } catch (err) {
+      console.log("Error fetching appointments list. ", err);
     }
   };
 
   // Fetch appointments on load
   useEffect(() => {
-  fetchAppointments();
-}, []);
+    fetchAppointments();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -38,9 +38,25 @@ function App() {
     }));
   };
 
+  const deleteAppointment = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/appointments/${id}`, {method: "DELETE",
+});
+
+      const data = await res.json();
+      console.log(data.message);
+
+      //refresh
+      fetchAppointments();
+        
+    } catch (err){
+      console.log("Error deleting appointment.", err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const res = await fetch("http://localhost:3001/api/appointments", {
         method: "POST",
@@ -57,7 +73,7 @@ function App() {
         name: "",
         doctor: "",
         date: "",
-        time: ""
+        time: "",
       });
 
       fetchAppointments();
@@ -198,6 +214,19 @@ function App() {
         <a href="#" className="view-more-link">
           View More
         </a>
+      </div>
+
+      <div className="adminBox">
+        <h2>Admin Panel</h2>
+        {appointments.map((appt) => (
+          <div key={appt.id} className="appointment-row">
+            <div>{appt.name}</div>
+            <div>{appt.doctor}</div>
+            <div>{new Date(appt.date).toLocaleDateString()}</div>
+            <div>{appt.time}</div>
+            <button onClick={() => deleteAppointment(appt.id)}>Delete</button>
+          </div>
+        ))}
       </div>
     </div>
   );

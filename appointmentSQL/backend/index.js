@@ -26,6 +26,15 @@ app.post("/api/appointments", (req, res) => {
     });
 });
 
+app.delete("/api/appointments/:id", (req,res) => {
+    const { id } = req.params;
+    const sql = "DELETE FROM appointments WHERE id = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Appointment deleted."});
+    });
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
