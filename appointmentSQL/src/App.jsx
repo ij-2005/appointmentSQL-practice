@@ -1,10 +1,24 @@
 import "./App.css";
 import { useState } from "react";
+import { useEffect } from "react";
 
 function App() {
-  const [appointments, setAppointments] = useState([
-    { name: "Josh", doctor: "Dr. Lee", date: "2026-01-10", time: "02:00" } // constant example
-  ]);
+  const [appointments, setAppointments] = useState([]);
+
+  const fetchAppointments = async () => {
+    try {
+      const res = await fetch("http://localhost:3001/api/appointments");
+      const data = await res.json();
+      setAppointments(data);
+    } catch (err){
+        console.log("Error fetching appointments list. ", err);
+    }
+  };
+
+  // Fetch appointments on load
+  useEffect(() => {
+  fetchAppointments();
+}, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -24,16 +38,32 @@ function App() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setAppointments((prev) => [...prev, formData]);
-    console.log("Appointment booked:", formData);
-    setFormData({
-      name: "",
-      doctor: "",
-      date: "",
-      time: "",
-    });
+    
+    try {
+      const res = await fetch("http://localhost:3001/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      console.log("Backend SQL: ", data);
+
+      setFormData({
+        name: "",
+        doctor: "",
+        date: "",
+        time: ""
+      });
+
+      fetchAppointments();
+    } catch (err) {
+      console.error("Error with submitting.", err);
+    }
   };
 
   return (
@@ -159,7 +189,7 @@ function App() {
               <div key={index} className="appointment-row">
                 <div>{appt.name}</div>
                 <div>{appt.doctor}</div>
-                <div>{appt.date}</div>
+                <div>{new Date(appt.date).toLocaleDateString()}</div>
                 <div>{appt.time}</div>
               </div>
             ))}
