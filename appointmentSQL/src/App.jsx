@@ -218,15 +218,17 @@ function App() {
 
       <div className="adminBox">
         <h2>Admin Panel</h2>
-        {appointments.map((appt) => (
-          <div key={appt.id} className="appointment-row">
-            <div>{appt.name}</div>
-            <div>{appt.doctor}</div>
-            <div>{new Date(appt.date).toLocaleDateString()}</div>
-            <div>{appt.time}</div>
-            <button onClick={() => deleteAppointment(appt.id)}>Delete</button>
-          </div>
-        ))}
+        <div>
+          {appointments.map((appt) => (
+            <div key={appt.id} className="appointment-row">
+              <div>{appt.name}</div>
+              <div>{appt.doctor}</div>
+              <div>{new Date(appt.date).toLocaleDateString()}</div>
+              <div>{appt.time}</div>
+              <button onClick={() => deleteAppointment(appt.id)}>Delete</button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

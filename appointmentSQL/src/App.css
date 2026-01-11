@@ -272,6 +272,8 @@ button:hover {
   max-width: 600px;
   border: 0.5px solid rgb(90, 90, 90);
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .adminBox h2 {
@@ -281,6 +283,27 @@ button:hover {
   font-size: 16px;
   font-weight: bold;
   letter-spacing: 1px;
+}
+
+.adminBox > div:not(h2) {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 200px;
+  max-height: 350px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.adminBox .appointment-row {
+  display: flex;
+  gap: 20px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 5px;
+  border: 1px solid #eee;
+  font-size: 14px;
+  align-items: center;
 }
 
 .adminBox .appointment-row div {
