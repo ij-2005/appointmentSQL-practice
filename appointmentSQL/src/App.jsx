@@ -4,7 +4,14 @@ import { useEffect } from "react";
 
 function App() {
   const [appointments, setAppointments] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    doctor: "",
+    time: "",
+  });
 
+
+  // data gathering here
   const fetchAppointments = async () => {
     try {
       const res = await fetch("http://localhost:3001/api/appointments");
@@ -40,16 +47,16 @@ function App() {
 
   const deleteAppointment = async (id) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/appointments/${id}`, {method: "DELETE",
-});
+      const res = await fetch(`http://localhost:3001/api/appointments/${id}`, {
+        method: "DELETE",
+      });
 
       const data = await res.json();
       console.log(data.message);
 
       //refresh
       fetchAppointments();
-        
-    } catch (err){
+    } catch (err) {
       console.log("Error deleting appointment.", err);
     }
   };
@@ -79,6 +86,46 @@ function App() {
       fetchAppointments();
     } catch (err) {
       console.error("Error with submitting.", err);
+    }
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const startEdit = (appt) => {
+    setEditingId(appt.id);
+    setEditFormData({
+      doctor: appt.doctor,
+      time: appt.time,
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditFormData({ doctor: "", time: "" });
+  };
+
+  const saveEdit = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/appointments/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editFormData),
+      });
+
+      const data = await res.json();
+      console.log(data.message);
+      setEditingId(null);
+      fetchAppointments();
+    } catch (err) {
+      console.log("Error updating appointment.", err);
     }
   };
 
@@ -221,11 +268,43 @@ function App() {
         <div>
           {appointments.map((appt) => (
             <div key={appt.id} className="appointment-row">
-              <div>{appt.name}</div>
-              <div>{appt.doctor}</div>
-              <div>{new Date(appt.date).toLocaleDateString()}</div>
-              <div>{appt.time}</div>
-              <button onClick={() => deleteAppointment(appt.id)}>Delete</button>
+              {editingId === appt.id ? (
+                <>
+                  <div>{appt.name}</div>
+                  <div>
+                    <select
+                      name="doctor"
+                      value={editFormData.doctor}
+                      onChange={handleEditChange}
+                    >
+                      <option value="Dr. Smith">Dr. Smith</option>
+                      <option value="Dr. Lee">Dr. Lee</option>
+                    </select>
+                  </div>
+                  <div>{new Date(appt.date).toLocaleDateString()}</div>
+                  <div>
+                    <input
+                      type="time"
+                      name="time"
+                      value={editFormData.time}
+                      onChange={handleEditChange}
+                    />
+                  </div>
+                  <button onClick={() => saveEdit(appt.id)}>Save</button>
+                  <button onClick={cancelEdit}>Cancel</button>
+                </>
+              ) : (
+                <>
+                  <div>{appt.name}</div>
+                  <div>{appt.doctor}</div>
+                  <div>{new Date(appt.date).toLocaleDateString()}</div>
+                  <div>{appt.time}</div>
+                  <button onClick={() => startEdit(appt)}>Edit</button>
+                  <button onClick={() => deleteAppointment(appt.id)}>
+                    Delete
+                  </button>
+                </>
+              )}
             </div>
           ))}
         </div>
